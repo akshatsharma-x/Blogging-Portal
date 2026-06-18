@@ -4,18 +4,24 @@ from rest_framework import viewsets, status, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import (
-    IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
+    IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny, IsAdminUser
 )
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Category, Tag, Post, Comment
 from .serializers import (
     CategorySerializer, TagSerializer,
     PostListSerializer, PostDetailSerializer,
     CommentSerializer, RegisterSerializer,
+    CustomTokenObtainPairSerializer,
 )
 from .pagination import StandardPagination, LargePagination
 from .filters import PostFilter
 from .permissions import IsAuthorOrReadOnly
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -144,6 +150,14 @@ class PostViewSet(viewsets.ModelViewSet):
         post.status = Post.Status.ARCHIVED
         post.save(update_fields=['status'])
         return Response({'detail': 'Post archived.'})
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
+    def toggle_featured(self, request, pk=None):
+        post = self.get_object()
+        post.featured = not post.featured
+        post.save(update_fields=['featured'])
+        status_text = "featured" if post.featured else "unfeatured"
+        return Response({'detail': f'Post {status_text}.', 'featured': post.featured})
 
     @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def featured(self, request):

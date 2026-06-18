@@ -1,9 +1,16 @@
 import Link from "next/link";
-import { blogs } from "@/data/blogs";
-import BlogCard from "@/components/BlogCard";
+import BlogCard, { Post } from "@/components/BlogCard";
+import { fetchAPI } from "@/lib/api";
 
-export default function Home() {
-  const featuredBlogs = blogs.slice(0, 3);
+export default async function Home() {
+  let featuredBlogs = [];
+  try {
+    featuredBlogs = await fetchAPI("/posts/featured/", { cache: "no-store" });
+  } catch (error) {
+    console.error("Failed to load featured blogs", error);
+  }
+
+  const blogsData = Array.isArray(featuredBlogs) ? featuredBlogs : (featuredBlogs as { results?: unknown[] }).results || [];
 
   return (
     <div className="space-y-8">
@@ -17,11 +24,15 @@ export default function Home() {
 
       <section>
         <h2 className="text-2xl font-bold mb-4">Featured Blogs</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredBlogs.map((blog) => (
-            <BlogCard key={blog.id} blog={blog} />
-          ))}
-        </div>
+        {blogsData.length === 0 ? (
+          <p className="text-gray-600">No featured blogs found.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {blogsData.map((blog: Post) => (
+              <BlogCard key={blog.id} blog={blog} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
