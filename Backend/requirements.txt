@@ -1,0 +1,9 @@
+Django==4.2.10
+djangorestframework==3.14.0
+django-filter==23.5
+djangorestframework-simplejwt==5.3.1
+Pillow>=10.4.0           # 10.2.0 has no Windows wheels — use 10.4+ which does
+python-decouple==3.8
+drf-spectacular==0.27.2
+django-cors-headers==4.3.1
+drf-nested-routers==0.94.1
