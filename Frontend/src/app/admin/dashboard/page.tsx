@@ -167,7 +167,7 @@ export default function AdminDashboard() {
     <div>
       <div className="flex justify-between items-center mb-6 border-b pb-4">
         <div>
-          <h1 className="text-3xl font-bold text-orange-600">Platform Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-orange-600">Admin Dashboard</h1>
           <p className="text-gray-500 mt-1">Moderate all posts across the entire platform.</p>
         </div>
       </div>
